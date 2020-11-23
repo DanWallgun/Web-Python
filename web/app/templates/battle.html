@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block topheading %}
+    Battle
+{% endblock %}
+
+{% block content %}
+<div class="containter p-3">
+    <div class="row p-2">
+        <div class="col-6 border text-center">
+            <div class="form-group">
+                <label for="input-first">First participant:</label>
+                <input id="input-first" type="text" class="form-control" placeholder="Enter login">
+            </div>
+        </div>
+        <div class="col-3 border text-center">
+            <div>Result</div>
+            <div id="result-first"></div>
+        </div>
+        <div class="col-3 border text-center">
+            <div>Rating</div>
+            <div id="rating-first"></div>
+        </div>
+    </div>
+    <div class="row p-2">
+        <div class="col-6 border text-center">
+            <div class="form-group">
+                <label for="input-second">Second participant:</label>
+                <input id="input-second" type="text" class="form-control" placeholder="Enter login">
+            </div>
+        </div>
+        <div class="col-3 border text-center">
+            <div>Result</div>
+            <div id="result-second"></div>
+        </div>
+        <div class="col-3 border text-center">
+            <div>Rating</div>
+            <div id="rating-second"></div>
+        </div>
+    </div>
+    <div class="row p-2">
+        <button class="btn btn-primary" onclick="battleOnClick()">Battle</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function updateRating(input, rankingu) {
+        var login = input.val()
+
+        $.ajax({
+            type: 'GET',
+            url: '/api/user/' + login,
+            dataType: "json",
+            success: function(data) {
+                rankingu.text(data.user.rating)
+            },
+            error: function(data) {
+                rankingu.text('')
+            }
+        });
+    }
+
+    function battleOnClick() {
+        $.ajax({
+            type: 'POST',
+            url: '/api/battle',
+            headers: {
+                Authorization : "Bearer " + localStorage.getItem("token")
+            },
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                user: {
+                    login: $("#input-second").val()
+                }
+            }),
+            dataType: "json",
+            success: function(data) {
+                var dices = data.dices
+                $("#result-first").text(dices[0])
+                $("#result-second").text(dices[1])
+                updateRating($("#input-first"), $("#rating-first"))
+                updateRating($("#input-second"), $("#rating-second"))
+            }
+        });
+    }
+
+    $("#input-first").change(function() {
+        updateRating($("#input-first"), $("#rating-first"))
+    })
+
+    $("#input-second").change(function() {
+        updateRating($("#input-second"), $("#rating-second"))
+    })
+
+    if (!updateLoginBlock()) {
+        window.location.replace("/");
+    } else {
+        $("#input-first").val(parseToken(localStorage.getItem("token")).login)
+        $("#input-first").prop("disabled", true)
+    }
+
+    updateRating($("#input-first"), $("#rating-first"))
+</script>
+{% endblock %}

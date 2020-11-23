@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        {% if title %}
+            <title>{{ title }}</title>
+        {% else %}
+            <title>Title</title>
+        {% endif %}
+
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-10">
+                    <h1 class="container p-3 bg-dark text-white display-4">
+                        <a href="/">
+                            {% block topheading %}
+                            {% endblock %}
+                        </a>
+                    </h1>
+                </div>
+                <div class="col-2">
+                    <div id="login-block" class="container text-center bg-light">
+                        <!-- <a href="/">Enter</a>
+                        <br>
+                        <a href="/">Register</a> -->
+                    </div>
+                </div>
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+        <script>
+            function parseToken(token) {
+                var tokens = token.split('.')
+                if (tokens.length < 2) {
+                    return undefined
+                }
+                var payload = JSON.parse(atob(tokens[1]))
+                if (payload.exp * 1000 < Date.now()) {
+                    return undefined
+                }
+                return payload.user
+            }
+            function loginOnClick() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/login',
+                    data: JSON.stringify({
+                        login: $('#input-login').val(),
+                        password: $('#input-password').val()
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        var token = data.token
+                        localStorage.setItem('token', token)
+                        var user = parseToken(token)
+                        window.location.replace("/profile/" + user.public_id);
+                    }
+                });
+            }
+            function registerOnClick() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/user',
+                    data: JSON.stringify({
+                        login: $('#input-login').val(),
+                        password: $('#input-password').val()
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        loginOnClick()
+                    }
+                });
+            }
+            function updateLoginBlock() {
+                var token = localStorage.getItem('token')
+                document.getElementById('login-block').innerHTML =
+                        '<a href="/login">Enter</a>\
+                        <br>\
+                        <a href="/register">Register</a>'
+                if (token == undefined) {
+                    return false
+                }
+                var user = parseToken(token)
+                if (user.public_id == undefined || user.login == undefined) {
+                    return false
+                }
+                document.getElementById('login-block').innerHTML =
+                    '<a href="/profile/' + user.public_id + '">' + user.login + '</a>\
+                    <br>\
+                    <a href="#" onclick=logout()>Log out</a>'
+                return true
+            }
+            function logout() {
+                localStorage.removeItem('token')
+                updateLoginBlock()
+            }
+            updateLoginBlock()
+        </script>
+        {% block script %}{% endblock %}
+    </body>
+</html>

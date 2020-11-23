@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  web:
+    container_name: web
+    build: ./web
+    ports:
+      - 8080:5000
+    environment:
+      - SECRET_KEY=Z2GJcsDWidBNJ8O7MSqGH7ocDq3e8tWiFLUE4bpL1UcTu3mZh6z97LhJUkcmtGut
+      - SQLALCHEMY_DATABASE_URI=sqlite:///./main.db

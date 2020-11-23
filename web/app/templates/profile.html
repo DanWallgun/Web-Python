@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block topheading %}
+    Profile
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-8">
+            <div class="container p-3 border">
+                <h2 class="font-weight-light">{{ user.login }}</h2>
+                <!-- <h4 class="font-weight-light">Admin - {{ user.admin }}</h4> -->
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="container p-3 bg-primary text-white text-center">
+                <h2 class="font-weight-light">Rating: </h2>
+                <h2 class="font-weight-light">{{ user.rating }}</h2>
+            </div>
+        </div>
+    </div>
+{% endblock %}

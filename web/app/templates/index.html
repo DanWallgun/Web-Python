@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block topheading %}
+    Home
+{% endblock %}
+
+{% block content %}
+    <h1 class="container p-3 border bg-light text-white display-4">
+        <a href="/battle">
+            Battle
+        </a>
+    </h1>
+    {% for user in users %}
+    <div class="row m-0">
+        <div class="col-8">
+            <h4 class="p-1 mr-1 bg-primary text-white font-weight-light text-center">
+                {{ user.login }}
+            </h4>
+        </div>
+        <div class="col-4">
+            <h4 class="p-1 ml-1 bg-primary text-white font-weight-light text-center">
+                {{ user.rating }}
+            </h4>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
