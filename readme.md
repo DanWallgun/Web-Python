@@ -8,3 +8,6 @@
 ## Overview
 - Python + Flask + JWT
 - Персистентность - sqlite3 (используется SQLAlchemy)
+
+## Пример работы
+Возможно, сайт запущен на [AWS-е](http://ec2-54-234-254-151.compute-1.amazonaws.com).
